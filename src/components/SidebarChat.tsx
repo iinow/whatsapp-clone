@@ -3,12 +3,13 @@ import '../css/SidebarChat.css'
 import { Avatar } from '@material-ui/core'
 import db from '../firebase'
 import { NewRoom } from '../model/Chat'
+import { Link } from 'react-router-dom'
 
-interface SidebarChatProps extends React.HTMLProps<any>{
+interface SidebarChatProps extends React.HTMLProps<any> {
   addNewChat?: boolean
 }
 
-const SidebarChat: React.FC<SidebarChatProps> = ({ addNewChat, name }) => {
+const SidebarChat: React.FC<SidebarChatProps> = ({ addNewChat, name, id }) => {
   const [seed, setSeed] = useState()
 
   useEffect(() => {
@@ -16,9 +17,9 @@ const SidebarChat: React.FC<SidebarChatProps> = ({ addNewChat, name }) => {
   }, [])
 
   const createChat = () => {
-    const roomName = prompt("Please enter name for chat")
+    const roomName = prompt('Please enter name for chat')
 
-    if(roomName) {
+    if (roomName) {
       const room: NewRoom = {
         name: roomName
       }
@@ -27,16 +28,18 @@ const SidebarChat: React.FC<SidebarChatProps> = ({ addNewChat, name }) => {
   }
 
   return !addNewChat ? (
-    <div className="sidebarChat">
-      <Avatar src={`https://avatars.dicebear.com/api/gridy/${seed}.svg`}/>
-      <div className="sidebarChat__info">
-        <h2>{name}</h2>
-        <p>Last message...</p>
+    <Link to={`/rooms/${id}`}>
+      <div className="sidebarChat">
+        <Avatar src={`https://avatars.dicebear.com/api/gridy/${seed}.svg`} />
+        <div className="sidebarChat__info">
+          <h2>{name}</h2>
+          <p>Last message...</p>
+        </div>
       </div>
-    </div>
+    </Link>
   ) : (
     <div onClick={createChat} className="sidebarChat">
-      <h2>Add new Chat</h2>
+      <h2>방 만들기</h2>
     </div>
   )
 }
