@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import '../css/Sidebar.css'
 import { Avatar, IconButton } from '@material-ui/core'
 import {
@@ -10,9 +10,13 @@ import {
 import SidebarChat from './SidebarChat'
 import db from '../firebase'
 import { Room } from '../model/Chat'
+import { observer } from 'mobx-react-lite'
+import { UserStore } from '../store'
 
 const Sidebar: React.FC = () => {
   const [rooms, setRooms] = useState(new Array<Room>())
+  const userStore = useContext(UserStore)
+  const { user } = userStore
 
   useEffect(() => {
     const unsubscribe = db.collection('rooms').onSnapshot(snapshot =>
@@ -34,7 +38,9 @@ const Sidebar: React.FC = () => {
   return (
     <div className="sidebar">
       <div className="sidebar__header">
-        <Avatar />
+        <div className="sidebar__headerLeft">
+          <Avatar src={`${user?.photoURL}`} />
+        </div>
         <div className="sidebar__headerRight">
           <IconButton>
             <DonutLargeIcon />
@@ -56,14 +62,12 @@ const Sidebar: React.FC = () => {
       </div>
       <div className="sidebar__chats">
         <SidebarChat addNewChat />
-        {
-          rooms.map(room => (
-            <SidebarChat key={room.id} id={room.id} name={room.data.name}/>
-          ))
-        }
+        {rooms.map(room => (
+          <SidebarChat key={room.id} id={room.id} name={room.data.name} />
+        ))}
       </div>
     </div>
   )
 }
 
-export default Sidebar
+export default observer(Sidebar)

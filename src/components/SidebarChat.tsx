@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import '../css/SidebarChat.css'
 import { Avatar } from '@material-ui/core'
 import db from '../firebase'
-import { NewRoom } from '../model/Chat'
+import { Message, NewRoom } from '../model/Chat'
 import { Link } from 'react-router-dom'
 
 interface SidebarChatProps extends React.HTMLProps<any> {
@@ -11,10 +11,27 @@ interface SidebarChatProps extends React.HTMLProps<any> {
 
 const SidebarChat: React.FC<SidebarChatProps> = ({ addNewChat, name, id }) => {
   const [seed, setSeed] = useState()
+  const [messages, setMessages] = useState(new Array<Message>())
 
   useEffect(() => {
     setSeed(Math.floor(Math.random() * 5000))
-  }, [])
+
+    if (id) {
+      db.collection('rooms')
+        .doc(id)
+        .collection('messages')
+        .orderBy('createdAt', 'desc')
+        .onSnapshot(snapshot =>
+          setMessages(
+            snapshot.docs.map(doc => ({
+              name: doc.data().name,
+              message: doc.data().message,
+              createdAt: doc.data().createdAt
+            }))
+          )
+        )
+    }
+  }, [id])
 
   const createChat = () => {
     const roomName = prompt('Please enter name for chat')
@@ -33,7 +50,7 @@ const SidebarChat: React.FC<SidebarChatProps> = ({ addNewChat, name, id }) => {
         <Avatar src={`https://avatars.dicebear.com/api/gridy/${seed}.svg`} />
         <div className="sidebarChat__info">
           <h2>{name}</h2>
-          <p>Last message...</p>
+          <p>{messages[0]?.message}</p>
         </div>
       </div>
     </Link>
