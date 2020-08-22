@@ -17,6 +17,7 @@ const Chat: React.FC = () => {
   const sendMessage = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     console.log('You typed >>> ', input)
+    setInput('')
   }
 
   const onChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
